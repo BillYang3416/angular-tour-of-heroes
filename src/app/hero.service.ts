@@ -11,6 +11,12 @@ import { catchError, map, tap } from 'rxjs/operators';
 })
 export class HeroService {
 
+  htppOptions = {
+    headers: new HttpHeaders({
+      'Content-type':'application/json'
+    })
+  };
+
   // the server
   private heroesUrl = 'api/heroes';
 
@@ -21,6 +27,8 @@ export class HeroService {
   private log(message: string) {
     this.messageService.add(`HeroService: ${message}`);
   }
+
+
 
   /** get one hero by id from server */
   getHero(id: number): Observable<Hero> {
@@ -58,6 +66,13 @@ export class HeroService {
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };
+  }
 
+  /** PUT: update the hero on the server */
+  updateHero(hero: Hero): Observable<any> {
+    return this.http.put(this.heroesUrl, hero, this.httpOptions).pipe(
+      tap(_ => this.log(`updated hero id=${hero.id}`)),
+      catchError(this.handleError<any>('updateHero'))
+    );
   }
 }
